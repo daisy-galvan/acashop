@@ -1,0 +1,21 @@
+aca_shop_home:
+    path:     /
+    defaults: { _controller: AcaShopBundle:Home:index }
+
+aca_shop_login:
+    path:     /login_user
+    defaults: { _controller: AcaShopBundle:Home:login}
+
+
+aca_shop_logout:
+    path:     /logout
+    defaults: { _controller: AcaShopBundle:Home:logout}
+
+
+aca_shop_about:
+    path:     /about
+    defaults: { _controller: AcaShopBundle:About:about }
+
+contact:
+    path:     /contact
+    defaults: { _controller: AcaShopBundle:Contact:contact }
