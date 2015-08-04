@@ -19,3 +19,27 @@ aca_shop_about:
 contact:
     path:     /contact
     defaults: { _controller: AcaShopBundle:Contact:contact }
+
+products:
+    path:     /products
+    defaults: { _controller: AcaShopBundle:Products:products }
+
+add:
+    path:     /add_cart
+    defaults: { _controller: AcaShopBundle:Cart:add }
+
+display_cart:
+   path:     /cart
+   defaults: { _controller: AcaShopBundle:Cart:show }
+
+delete_cart_item:
+    path:     /delete_cart_item
+    defaults: { _controller: AcaShopBundle:Cart:delete }
+
+update_cart_item:
+    path:     /update_cart_item
+    defaults: { _controller: AcaShopBundle:Cart:update }
+
+thank_you:
+    path:     /thank_you
+    defaults: { _controller: AcaShopBundle:thankYou:thankYou }

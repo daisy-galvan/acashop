@@ -1,0 +1,39 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}AcaShopBundle:Products:products{% endblock %}
+
+{% block body %}
+    <h1>Check out our Products!</h1>
+    <br/>
+    <br/>
+    {% if products is not empty %}
+
+        {% for products in products %}
+            <table class="table table-striped" style="width:100%;">
+                <tr>
+                    <td>
+                        <img src="{{ products.image }}" width="100px"/>
+                    </td>
+                    <td>
+                        <h3>{{ products.name }} </h3>
+
+                        <p>{{ products.description }}</p>
+                    </td>
+                    <td style="width:200px;">
+                        <h3>${{ products.price }}</h3>
+
+                        <form name="addToCart" action="/cart" method="post">
+                            <input type="text" name="quantity" value="1"/>
+                            <input type="submit" value="Add to cart"/>
+                            <input type="hidden" name="product_id" value="{{ products.product_id }}"
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        {% endfor %}
+    {% else %}
+        <h3>No products to display</h3>
+    {% endif %}
+
+{% endblock %}
+

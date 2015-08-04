@@ -3,6 +3,7 @@
 namespace Aca\Bundle\ShopBundle\Controller;
 
 use Aca\Bundle\ShopBundle\Db\DBCommon;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -40,7 +41,10 @@ class HomeController extends Controller
         //check username and pw
         $query = 'select * from aca_user where username="' . $username . '" and password="' . $password . '"';
 
-        $db = new DBCommon();
+        //$db = new DBCommon();
+        //replacing this with line 47, which uses the Service layer
+
+        $db = $this->get('aca.db');
         $db->setQuery($query);
         $user = $db->loadObject();  //fetches one row from db
 

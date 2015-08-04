@@ -104,13 +104,17 @@
 
 <body>
 
-<div class="container">
+<div class="container-fluid">
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills pull-right">
                 <li role="presentation" class="active"><a href="http://acashop.vm/">Home</a></li>
                 <li role="presentation"><a href="http://acashop.vm/about">About</a></li>
                 <li role="presentation"><a href="http://acashop.vm/contact">Contact</a></li>
+                <li role="presentation"><a href="http://acashop.vm/products">Products</a></li>
+
+                <li role="presentation"><a href="/products">Products</a></li>
+                <li role="presentation"><a href="/cart">Cart</a></li>
             </ul>
         </nav>
         <h3 class="text-muted">ACA Shop</h3>
@@ -118,18 +122,20 @@
 
 
     <div class="col-lg-10">
+        <div class="row">
         {% block body %}
             This is the parent
         {% endblock %}
+        </div>
 
     </div>
 
-
-    <footer class="footer">
-        <p>&copy; Company 2014</p>
-    </footer>
-
 </div>
+
+<footer class="footer">
+    <p>&copy; ACA 2015</p>
+</footer>
+
 <!-- /container -->
 
 
