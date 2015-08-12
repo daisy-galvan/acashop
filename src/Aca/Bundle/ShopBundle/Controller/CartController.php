@@ -18,6 +18,7 @@ class CartController extends Controller
         /** @var  $session */
         $session = $this->get('session');
 
+        // get the cart from session, might be empty first time around
         $cart = $session->get('cart');
 
         $productID = $_POST['product_id'];
@@ -46,8 +47,7 @@ class CartController extends Controller
             if ($existingItem == false) {
                 $cart[] = array(
                     'product_id' => $productID,
-                    'quantity' => $quantity
-                );
+                    'quantity' => $quantity);
             }
         }
 
@@ -58,102 +58,120 @@ class CartController extends Controller
     }
 
     /**
-     * Show user's shopping cart contents
+     * Show the contents of the user's shopping cart
      */
-    public function  showAction()
+    public function showAction()
     {
+        try {
+            $cart = $this->get('aca.cart');
+            $grandTotal = $cart->getGrandTotal();
+            $userSelectedProducts = $cart->getProducts();
 
-        /** @var DBCommon $db */
-        $db = $this->get('aca.db');
-        $session = $this->get('session');
-        $cartItems = $session->get('cart');
-
-//        $cartProductIDs= [];
-//
-//        foreach ($cartItems as $cartItem) {
-//            $cartProductIDs =$cartItem['product_id'];
-//        }
-//
-//        $query = 'select * from aca_product where product_id
-//            in (' . implode(',', $cartProductIDs) . ')';
-//        $db->setQuery($query);
-//        $dbProducts= $db->loadObjectList();
-//
-//
-//        $userSelectedProducts=[];
-//        $grandTotal= 0.00;
-//        foreach ($cartItems as $cartItem) {
-//
-//        }
-//
-//
-//            /** @var array $userSelectedProducts Contains the merge of products/cart items */
-//            $userSelectedProducts = [];
-//            // Challenge: Is to merge the items in the cart, with products!
-//            // Hint: two loops! loop through the DB products first, then cart items
-//            $grandTotal = 0.00;
-//            foreach ($cartItems as $cartItem) {
-//                foreach ($dbProducts as $dbProduct) {
-//                    // magic happens! the struggle is real...
-//                    if ($dbProduct->product_id == $cartItem['product_id']) {
-//                        $dbProduct->quantity = $cartItem['quantity'];
-//                        $dbProduct->total_price = $dbProduct->price * $cartItem['quantity'];
-//                        $grandTotal += $dbProduct->total_price;
-//                        $userSelectedProducts[] = $dbProduct;
-//                    }
-//                }
-//            }
-//            return $this->render('AcaShopBundle:Cart:list.html.twig',
-//                array(
-//                    'products' => $userSelectedProducts,
-//                    'grandTotal' => $grandTotal
-//                )
-//            );
-//        }
+            return $this->render('AcaShopBundle:Cart:list.html.twig',
+                array(
+                    'products' => $userSelectedProducts,
+                    'grandTotal' => $grandTotal)
+            );
+        } catch (\Exception $exception) {
+            $errorMessage = $exception->getMessage();
+            return $this->render('AcaShopBundle:Cart:list.html.twig',
+                array('errorMessage' => $errorMessage));
+        }
     }
 
     /**
-     * Delete an item from cart
+     * Delete one item from your shopping cart
+     * @throws \Exception
      * @return RedirectResponse
      */
     public function deleteAction()
     {
-        $productID = $_POST['product_id'];
+        $productId = $_POST['product_id'];
+        $cart = $this->get('aca.cart');
+        $cart->delete($productId);
+        return new RedirectResponse('/cart');
+    }
 
-        $session = $this->get('session');
-        $cartItems = $session->get('cart');
+    /**
+     * Update the quantity for one particular product in the cart
+     * @return RedirectResponse
+     */
+    public function updateAction()
+    {
+        $productId = $_POST['product_id'];
+        $updatedQuantity = $_POST['quantity'];
 
-        foreach ($cartItems as $index => $cartItem) {
-            if ($cartItem['product_id'] == $productID) {
-                unset($cartItems[$index]);
-            }
-        }
-
-        $session->set('cart', $cartItems);
+        $cart = $this->get('aca.cart');
+        $cart->updateQuantity($productId, $updatedQuantity);
 
         return new RedirectResponse('/cart');
     }
 
     /**
-     * Update quantity by individual product in cart
-     * @return RedirectResponse
+     * Show shipping address form
      */
-    public function updateAction()
+    public function shippingAddressAction()
     {
-        $productID = $_POST['product_id'];
-        $updatedQuantity = $_POST['quantity'];
-
+        /** @var Session $session */
         $session = $this->get('session');
-        $cartItems = $session->get('cart');
 
-        foreach($cartItems as $index => $cartItem){
-            if($cartItem['product_id'] == $productID) {
-                $cartItems[$index]['quantity'] = $updatedQuantity;
-            }
+        /** @var DBCommon $db */
+        $db = $this->get('aca.db');
+
+        /** @var int $userId Logged in user identifier */
+        $userId = $session->get('user_id');
+
+        if (empty($userId)) {
+
+            // messaging telling them: why i am i here and what do i do
+            $session->get('error_message', 'Why am I here and what am I doing?');
+
+            return new RedirectResponse('/');
         }
 
-        $session->set('cart', $cartItems);
+        // Get the shipping_address_id and billing_address_id from the user table
+        $query = '
+        select
+            shipping_address_id,
+            billing_address_id
+        from
+            aca_user
+        where
+            user_id = ' . $userId;
 
-        return new RedirectResponse('/cart');
+        $db->setQuery($query);
+        $shippingIds = $db->loadObject();
+
+        $shippingAddressId = $shippingIds->shipping_address_id;
+        $billingAddressId = $shippingIds->billing_address_id;
+
+        // Get shipping address
+        $shippingQuery = '
+        select
+            *
+        from
+            aca_address
+        where
+            address_id =' . $shippingAddressId;
+        $db->setQuery($shippingQuery);
+        $shippingAddress = $db->loadObject();
+
+        //get billing address
+        $billingQuery = '
+        select
+            *
+        from
+            aca_address
+        where
+            address_id =' . $billingAddressId;
+        $db->setQuery($billingQuery);
+        $billingAddress = $db->loadObject();
+
+        return $this->render('AcaShopBundle:Shipping:address.html.twig',
+            array(
+                'shipping' => $shippingAddress,
+                'billing' => $billingAddress
+            )
+        );
     }
 }

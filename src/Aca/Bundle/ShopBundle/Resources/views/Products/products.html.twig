@@ -1,39 +1,53 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}AcaShopBundle:Products:products{% endblock %}
-
 {% block body %}
-    <h1>Check out our Products!</h1>
-    <br/>
-    <br/>
+
     {% if products is not empty %}
 
-        {% for products in products %}
-            <table class="table table-striped" style="width:100%;">
+        <table class="table table-striped" style="width:100%;">
+
+            {% for product in products %}
+
                 <tr>
                     <td>
-                        <img src="{{ products.image }}" width="100px"/>
+                        <img src="{{ product.image }}" width="100px"/>
                     </td>
                     <td>
-                        <h3>{{ products.name }} </h3>
+                        <h3>{{ product.name }}</h3>
 
-                        <p>{{ products.description }}</p>
+                        <p>{{ product.description }}</p>
                     </td>
+
                     <td style="width:200px;">
-                        <h3>${{ products.price }}</h3>
 
-                        <form name="addToCart" action="/cart" method="post">
-                            <input type="text" name="quantity" value="1"/>
-                            <input type="submit" value="Add to cart"/>
-                            <input type="hidden" name="product_id" value="{{ products.product_id }}"
+                        Price: <b>${{ product.price }}</b>
+
+                        <form name="addToCart" action="/add_cart" method="post">
+                            <label for="quantity">Quantity:</label>
+                            <input type="text" name="quantity" value="1" size="3"/>
+                            <input type="submit" value="Add to Cart"/>
+                            <input type="hidden" name="product_id" value="{{ product.product_id }}"/>
                         </form>
+
+                        <!--
+                        - Create route /add_cart
+                        - Create controller CartController::addAction()
+                        - Receive product_id and quantity
+                        - Store it in session. Note that I can add multiple items to my cart.
+                        -->
+
                     </td>
+
                 </tr>
-            </table>
-        {% endfor %}
+
+            {% endfor %}
+
+        </table>
+
     {% else %}
-        <h3>No products to display</h3>
+
+        <h4>No products to display</h4>
+
     {% endif %}
 
 {% endblock %}
-

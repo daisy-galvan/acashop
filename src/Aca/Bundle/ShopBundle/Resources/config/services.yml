@@ -4,6 +4,20 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
 
     aca.db: # this should be unique
-         class: Aca\Bundle\ShopBundle\Db\DBCommon
-         arguments: [%database_host%, %database_user%, %database_password%, %database_name%]
+      class: Aca\Bundle\ShopBundle\Db\DBCommon
+      arguments: [%database_host%, %database_user%, %database_password%, %database_name%]
+
+    # cart class
+    aca.cart:
+      class: Aca\Bundle\ShopBundle\Shop\cart
+      arguments: [@aca.db, @session, @aca.product]
+
+    # orderComplete class
+    aca.order:
+      class: Aca\Bundle\ShopBundle\Shop\orderComplete
+      arguments: [@aca.db, @session]
+
+    aca.product:
+      class: Aca\Bundle\ShopBundle\Shop\product
+      arguments: [@aca.db]
 

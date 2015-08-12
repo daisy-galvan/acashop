@@ -22,7 +22,7 @@ contact:
 
 products:
     path:     /products
-    defaults: { _controller: AcaShopBundle:Products:products }
+    defaults: { _controller: AcaShopBundle:Products:show }
 
 add:
     path:     /add_cart
@@ -40,6 +40,14 @@ update_cart_item:
     path:     /update_cart_item
     defaults: { _controller: AcaShopBundle:Cart:update }
 
-thank_you:
-    path:     /thank_you
-    defaults: { _controller: AcaShopBundle:thankYou:thankYou }
+shipping_address:
+    path: /shipping_address
+    defaults: { _controller: AcaShopBundle:Cart:shippingAddress }
+
+aca_place_order:
+    path: /place_order
+    defaults: { _controller: AcaShopBundle:Order:place }
+
+aca_receipt:
+    path: /receipt
+    defaults: { _controller: AcaShopBundle:Receipt:show }
